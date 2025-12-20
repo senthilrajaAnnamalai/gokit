@@ -1,29 +1,37 @@
-// Configuration for the observer
+/**
+ * 1. Intersection Observer (Fade-in Animations)
+ */
 const observerOptions = {
-    threshold: 0.25 // Trigger when 15% of the section is visible
+    threshold: 0.15 // Trigger earlier on mobile
 };
 
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('is-visible');
-            // Remove unobserve if you want it to fade out/in every time
-            // observer.unobserve(entry.target); 
+            // If it's the about section, add the specific reveal class too
+            if(entry.target.id === 'about') {
+                entry.target.classList.add('reveal-active');
+            }
         }
     });
 }, observerOptions);
 
-// Apply to all sections with the fade-section class
-document.querySelectorAll('.fade-section').forEach(section => {
-    observer.observe(section);
-});
+// Observe all sections with fade-section class and the about section
+document.querySelectorAll('.fade-section, #about').forEach(el => observer.observe(el));
 
+
+/**
+ * 2. Hero Slider Logic
+ */
 const slides = document.querySelectorAll('.slide');
 const dots = document.querySelectorAll('.dot');
 let currentSlide = 0;
 
 function updateSlider(index) {
-    // Wrap index if it goes out of bounds
+    if (slides.length === 0) return;
+
+    // Wrap index if out of bounds
     if (index >= slides.length) currentSlide = 0;
     else if (index < 0) currentSlide = slides.length - 1;
     else currentSlide = index;
@@ -34,43 +42,50 @@ function updateSlider(index) {
 
     // Update dots
     dots.forEach(dot => dot.classList.remove('active'));
-    dots[currentSlide].classList.add('active');
+    if (dots[currentSlide]) dots[currentSlide].classList.add('active');
 }
 
-// Arrow Navigation
-function moveSlide(step) {
+// Make functions global so HTML onclick works
+window.moveSlide = function(step) {
     updateSlider(currentSlide + step);
-}
+};
 
-// Dot Navigation
-function jumpToSlide(index) {
+window.jumpToSlide = function(index) {
     updateSlider(index);
-}
+};
 
-// Keep your automatic interval
-setInterval(() => moveSlide(1), 5000);
+// Automatic Slider (5 seconds)
+setInterval(() => window.moveSlide(1), 5000);
 
 
-//about section transition
+/**
+ * 3. Mobile Navigation (Single Event Listener)
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const navLinks = document.querySelector('.nav-links');
 
-// Intersection Observer for the About Section
-const aboutObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            // This adds the 'reveal-active' class to the #about section
-            entry.target.classList.add('reveal-active');
-            
-            // Optional: stop observing once it has revealed once
-            // aboutObserver.unobserve(entry.target); 
-        }
-    });
-}, {
-    threshold: 0.2 // Trigger when 20% of the section is visible
+    if (mobileToggle && navLinks) {
+        mobileToggle.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevents click from bubbling
+            navLinks.classList.toggle('active');
+            mobileToggle.classList.toggle('open');
+        });
+
+        // Close menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                mobileToggle.classList.remove('open');
+            });
+        });
+
+        // Close menu if clicking anywhere outside the menu
+        document.addEventListener('click', (e) => {
+            if (!navLinks.contains(e.target) && !mobileToggle.contains(e.target)) {
+                navLinks.classList.remove('active');
+                mobileToggle.classList.remove('open');
+            }
+        });
+    }
 });
-
-// Start observing the About Section
-const aboutSection = document.querySelector('#about');
-if (aboutSection) {
-    aboutObserver.observe(aboutSection);
-}
-
