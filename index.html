@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gokit</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="fonts.googleapis.com" rel="stylesheet">
+</head>
+<body>
+    <nav class="split-nav">
+        <div class="nav-container">
+
+            <!-- Centered Logo -->
+            <div class="nav-logo">
+                <a href="#hero" class="logo-link"><img src="images/logo.svg" alt="Gokit Logo" class="brand-logo"></a>
+            </div>          
+
+            <!-- Right Side Links -->
+            <ul class="nav-links right">
+                <li><a href="#hero"></i> Home</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#travel">Travel</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#contact" class="nav-cta">Contact</a></li>
+            </ul>
+
+            <!-- Hamburger (Hidden on Desktop) -->
+            <div class="nav-toggle" id="mobile-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </nav>
+
+
+    <main>
+        <!-- Section 1: Hero -->
+        <section id="hero" class="hero-slider" >
+    <div class="slides-container">
+        <!-- Slide 1 -->
+        <div class="slide active" style="background-image: url('images/travel_cover.png');">
+            <div class="hero-content">
+            </div>
+        </div>
+        <!-- Slide 2 -->
+        <div class="slide" style="background-image: url('images/hotel_cover1.png');">
+            <div class="hero-content">
+            </div>
+        </div>
+        <!-- Slide 3 -->
+        <div class="slide" style="background-image: url('images/corporate_cover.png');">
+            <div class="hero-content">
+            </div>
+        </div>
+        <!-- Slide 3 -->
+        <div class="slide" style="background-image: url('images/gift_cover1.png');">
+            <div class="hero-content">
+            </div>
+        </div>
+    </div>
+        <button class="nav-arrow prev" onclick="moveSlide(-1)">&#10094;</button>
+    <button class="nav-arrow next" onclick="moveSlide(1)">&#10095;</button>
+
+    <!-- NEW: Navigation Dots -->
+    <div class="dot-container">
+        <span class="dot active" onclick="jumpToSlide(0)"></span>
+        <span class="dot" onclick="jumpToSlide(1)"></span>
+        <span class="dot" onclick="jumpToSlide(2)"></span>
+        <span class="dot" onclick="jumpToSlide(3)"></span>
+    </div>
+</section>
+
+        <!-- Section 2: About -->
+        <section id="about" class="fade-section" style="background-color: rgb(255, 255, 255);">
+            <div class="container about-flex">
+                <!-- Left Side: Text content -->
+                <div class="about-text">
+                    <h2><span>Welcome to Gokit</span></h2>
+                    <p class="fade-section">
+                        Gokit is a packaging company operates on a practical ground where we aim to deliver a modern, compact and comfortable solution tailored for every unique need. 
+                        <br><br>
+                        <b>GoKit-Travel</b> is your all-in-one travel companion, thoughtfully packed with essentials that make every bus ride smoother, cleaner, and more refreshing. From hydration to hygiene and healthy snacks, we ensure passengers feel cared for - right from the moment they onboard.</p>
+                </div>
+
+                <!-- Right Side: Image content -->
+                <div class="about-image">
+                    <img src="images/about-img.png" alt="About our journey" class="side-img">
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Section 4: Travel -->
+        <section id="travel" class="fade-section bg-alt"  style="background-color: rgba(45, 45, 44, 0.822);">
+            <div class="container">
+                <div class="section-intro">
+                    <h2 class="slide-left" style="color: white;">Travel Smart...</h2>
+                    <p class="slide-right" style="color: white;"> 
+                    &emsp;&emsp;&emsp;Long bus journeys can be tough — especially when passengers have limited access to basic hygiene, hydration, or nourishing snacks. This affects comfort, satisfaction, and the overall travel experience of an individual.
+                    The necessity of a standardized, affordable, and ready-to-use travel kit leaves a gap in the market - one that GoKit is perfectly positioned to fill.
+                    <br><br>
+                    &emsp;&emsp;&emsp;At GoKit, we believe every traveller deserves care, convenience, and comfort — no matter how far they’re going. That’s why we created a compact, easy to carry and curated travel kit designed specifically to address passenger needs.
+                    </p>
+                </div>
+                <div class="grid">
+                    <!-- Your cards remain here -->
+                    <div class="card">
+                        <!-- NEW WRAPPER DIV -->
+                        <div class="icon-circle-wrapper">
+                            <img src="images/icon_1.png" alt="Map pin icon" class="card-icon"> 
+                        </div>
+                        <p class="card-description">Keeps travelers feeling fresh and hygiene throughout their journey. Allows them to relax, knowing their basic needs are met and enjoy the trip</p>
+                    </div>
+                    <div class="card">
+                        <!-- NEW WRAPPER DIV -->
+                        <div class="icon-circle-wrapper">
+                            <img src="images/icon_2.png" alt="Map pin icon" class="card-icon"> 
+                        </div>
+                        <p class="card-description">Smart selection of snacks to keep travelers energized and satisfied. From protein-rich nuts to hydration, we deliver healthy centric yet yummy treats 
+</p>
+                    </div>
+                    <div class="card">
+                        <!-- NEW WRAPPER DIV -->
+                        <div class="icon-circle-wrapper">
+                            <img src="images/icon_3.png" alt="Map pin icon" class="card-icon"> 
+                        </div>
+                        <p class="card-description">A compact, lightweight, and easy to carry kit designed to fit seamlessly into any travel routine. We deliver maximum convenience in a minimal package
+</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Services -->
+        <section id="services" class="fade-section bg-alt" style="background-color: rgb(237, 237, 237);">
+            <div class="full-width-container">
+                <div class="section-intro">
+                    <h2 style="text-align: center;" class="expand-settle">Excited to <span style="color: rgb(239, 151, 87);">explore</span> our <span style="color: rgb(239, 151, 87);">services</span>..?</h2>
+                </div>
+                <div class="services-stretch-grid">
+                    <!-- Square 1 -->
+                    <div class="service-square slide-up">
+                        <div class="cloud-comment">
+                            <h2>Travel</h2>
+                            <p>Elevate your journey with our perfectly packed essentials, ensuring hygiene and comfort on the go.</p>
+                        </div>
+                        <img src="images/travel.png" alt="Service 1" style="padding: 5px;">
+                    </div>
+
+                    <!-- Square 2 -->
+                    <div class="service-square slide-up">
+                        <div class="cloud-comment">
+                            <h2>Corporate Events</h2>
+                            <p>From high-stakes corporate summits to large-scale gatherings, we craft precision-tailored kits for every prestige event</p>
+                        </div>
+                        <img src="images/corporate.png" alt="Service 2" style="padding: 5px;">
+                    </div>
+
+                    <!-- Square 3 -->
+                    <div class="service-square slide-up">
+                        <div class="cloud-comment">
+                            <h2>Hotels</h2>
+                            <p>Check-in just got better, everything you need for a comfortable stay is waiting for you, perfectly packed and ready to use</p>
+                        </div>
+                        <img src="images/hotel.png" alt="Service 3" style="padding: 5px;">
+                    </div>
+
+                    <!-- Square 4 -->
+                    <div class="service-square slide-up">
+                        <div class="cloud-comment">
+                            <h2>Celebrations</h2>
+                            <p>Gifting is delight. From wedding favors to festive surprises, we we bundle memorable moments for your loved ones.</p>
+                        </div>
+                        <img src="images/wedding.png" alt="Service 4" style="padding: 5px;">
+                    </div>
+                </div>
+                <br><br><br><br><br>
+                    <h2 style="text-align: center;" class="expand-settle">And many <span style="color: rgb(239, 151, 87);">more...</h2>
+            </div>
+        </section>
+
+        <!-- Section 5: Contact -->
+        <section id="contact" class="fade-section bg-alt">
+            <div class="container contact-flex">
+                
+                <!-- Left Side: Contact Details -->
+                <div class="contact-details">
+                    <h2>Get in Touch</h2>
+                    <p>Feel free to reach our team, a tailored kit can always be made to meet your needs.</p>
+                    
+                    <div class="contact-info-list">
+                        <div class="info-item">
+                            <img src="images/mail.png" alt="Email" class="info-icon">
+                            <div>
+                                <h4>Email Us</h4>
+                                <p>connect@gokit.co.in</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <img src="images/call.png" alt="Phone" class="info-icon">
+                            <div>
+                                <h4>Call Us</h4>
+                                <p>+91 89034-56518</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <img src="images/location.png" alt="Location" class="info-icon">
+                            <div>
+                                <h4>Our Hubs</h4>
+                                <p>Salem, Chennai & Bengaluru</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Contact Form -->
+                <div class="contact-form-container  slide-right">
+                    <form class="contact-form" action="https://formsubmit.co/gokitindia@gmail.com" method="POST" >
+                        <h3>Send Message</h3>
+                        <div class="form-group">
+                            <input type="text" placeholder="Full Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="Email Address" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea placeholder="Tell us about your trip..." rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Send Inquiry</button>
+                    </form>
+                </div>
+                </div>
+    </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
