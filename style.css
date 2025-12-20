@@ -6,6 +6,11 @@
     font-family: 'Poppins', sans-serif; /* Set Poppins as default */
 }
 
+html, body {
+    max-width: 100%;
+    overflow-x: hidden; /* This hides the extra white space on the right */
+    position: relative;
+}
 
 html { 
     scroll-behavior: smooth; 
@@ -111,6 +116,15 @@ input, button, textarea, select {
     border-bottom: 1px solid #eeeeee;
     z-index: 3000;
     padding: 0.8rem 0;
+    opacity: 1 !important;        /* Force visibility */
+    transform: none !important;    /* Stop it from sliding/moving via animations */
+    visibility: visible !important;
+    z-index: 9999 !important;      /* Keep it above every other section */
+}
+
+#mobile-toggle {
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .nav-container {
@@ -705,6 +719,19 @@ section {
     }
 }
 
+@media (max-width: 768px) {
+    /* Reduce the distance items travel so they don't go off-screen */
+    .slide-left, .slide-right {
+        transform: translateX(0) !important; /* Disables the horizontal movement on mobile */
+        opacity: 1 !important; /* Just let them fade in or appear instantly */
+    }
+    
+    .about-image {
+        transform: none !important; /* Fixes the about image pushing the side out */
+        max-width: 100%;
+    }
+}
+
 /* Service section */
 
 /* Container that ignores standard margins */
@@ -1029,4 +1056,15 @@ section {
         transform: none !important; /* Stop the bouncy shift-right on mobile */
         display: none; /* Images are often too crowded on small phones */
     }
+}
+
+/* Add this to the end of your CSS to ensure the nav is always visible from the start */
+.split-nav, 
+.nav-container, 
+#mobile-toggle, 
+.nav-toggle span {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    transition: opacity 0s, transform 0s !important; /* Disables fade-in for the nav only */
 }
