@@ -224,16 +224,20 @@
                 <!-- Right Side: Contact Form -->
                 <div class="contact-form-container  slide-right">
                     <form class="contact-form" action="https://formsubmit.co/gokitindia@gmail.com" method="POST" >
+                        <input type="hidden" name="_next" value="http://127.0.0.1:5500/thank-you.html">
+    
+                        <input type="hidden" name="_captcha" value="false">
                         <h3>Send Message</h3>
                         <div class="form-group">
-                            <input type="text" placeholder="Full Name" required>
+                            <input type="text" name="name" placeholder="Full Name" required>
                         </div>
                         <div class="form-group">
-                            <input type="email" placeholder="Email Address" required>
+                            <input type="email" name="email" placeholder="Email Address" required>
                         </div>
                         <div class="form-group">
-                            <textarea placeholder="Tell us about your trip..." rows="5" required></textarea>
+                            <textarea name="message" placeholder="Tell us about your trip..." rows="5" required></textarea>
                         </div>
+                        <input type="hidden" name="_subject" value="New Gokit Inquiry!">
                         <button type="submit" class="btn">Send Inquiry</button>
                     </form>
                 </div>
