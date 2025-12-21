@@ -1,91 +1,1116 @@
-/**
- * 1. Intersection Observer (Fade-in Animations)
- */
-const observerOptions = {
-    threshold: 0.15 // Trigger earlier on mobile
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            // If it's the about section, add the specific reveal class too
-            if(entry.target.id === 'about') {
-                entry.target.classList.add('reveal-active');
-            }
-        }
-    });
-}, observerOptions);
-
-// Observe all sections with fade-section class and the about section
-document.querySelectorAll('.fade-section, #about').forEach(el => observer.observe(el));
-
-
-/**
- * 2. Hero Slider Logic
- */
-const slides = document.querySelectorAll('.slide');
-const dots = document.querySelectorAll('.dot');
-let currentSlide = 0;
-
-function updateSlider(index) {
-    if (slides.length === 0) return;
-
-    // Wrap index if out of bounds
-    if (index >= slides.length) currentSlide = 0;
-    else if (index < 0) currentSlide = slides.length - 1;
-    else currentSlide = index;
-
-    // Update slides
-    slides.forEach(slide => slide.classList.remove('active'));
-    slides[currentSlide].classList.add('active');
-
-    // Update dots
-    dots.forEach(dot => dot.classList.remove('active'));
-    if (dots[currentSlide]) dots[currentSlide].classList.add('active');
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif; /* Set Poppins as default */
 }
 
-// Make functions global so HTML onclick works
-window.moveSlide = function(step) {
-    updateSlider(currentSlide + step);
-};
+html, body {
+    max-width: 100%;
+    overflow-x: hidden; /* This hides the extra white space on the right */
+    position: relative;
+}
 
-window.jumpToSlide = function(index) {
-    updateSlider(index);
-};
+html { 
+    scroll-behavior: smooth; 
+}
 
-// Automatic Slider (5 seconds)
-setInterval(() => window.moveSlide(1), 5000);
+body {
+    line-height: 1.6;
+    color: #333;
+    font-weight: 400; /* Regular weight for body text */
+}
+
+h1, h2, .logo {
+    font-weight: 800; /* Extra Bold for impact */
+    letter-spacing: -1px;
+}
+
+h3, h4{
+    font-weight: 600; /* Semi-Bold for subheaders and navigation */
+}
+
+/* 4. Form Elements & Buttons */
+input, button, textarea, select {
+    font-family: 'Poppins', sans-serif; /* Form elements often ignore global settings; this fixes it */
+}
+
+.expand-settle {
+    opacity: 0;
+    /* Start small (0.7) and slightly blurred */
+    transform: scale(0.7);
+    
+    /* 2025 "Spring" Easing: The secret to the 'Settle' effect */
+    /* This cubic-bezier creates the overshoot and bounce back */
+    transition: 
+        opacity 1.2s ease-out, 
+        filter 1.2s ease-out,
+        transform 1.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    
+    will-change: transform, opacity;
+}
+
+/* Triggered when the section is visible */
+.is-visible .expand-settle,
+.reveal-active .expand-settle {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1); /* Expands to 100% after a slight overshoot */
+}
+
+.slide-up {
+    opacity: 0;
+    /* Start 100px below final position */
+    transform: translateY(500px); 
+    /* 2025 Easing: Very fast start, extremely smooth slow-down */
+    transition: 
+        opacity 1.2s ease, 
+        transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
+}
+
+.slide-up:nth-child(1) { transition-delay: 0.1s; }
+.slide-up:nth-child(2) { transition-delay: 0.2s; }
+.slide-up:nth-child(3) { transition-delay: 0.3s; }
+.slide-up:nth-child(4) { transition-delay: 0.5s; }
+
+/* State when the section becomes visible (triggered by your JS) */
+.is-visible .slide-up, 
+.reveal-active .slide-up,
+.slide-up.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
 
 
-/**
- * 3. Mobile Navigation (Single Event Listener)
- */
-document.addEventListener('DOMContentLoaded', () => {
-    const mobileToggle = document.getElementById('mobile-toggle');
-    const navLinks = document.querySelector('.nav-links');
+/* new nav start */
 
-    if (mobileToggle && navLinks) {
-        mobileToggle.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevents click from bubbling
-            navLinks.classList.toggle('active');
-            mobileToggle.classList.toggle('open');
-        });
+.navbar {
+    position: fixed;
+    top: 25px; 
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1100px;
 
-        // Close menu when clicking a link
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('active');
-                mobileToggle.classList.remove('open');
-            });
-        });
+    /* KEY FIXES */
+    height: auto; /* REMOVE fixed height, let content define height */
+    min-height: 70px; /* Ensure it never shrinks too much */
+    padding: 1rem 30px; /* Add padding top and bottom for breathing room */
 
-        // Close menu if clicking anywhere outside the menu
-        document.addEventListener('click', (e) => {
-            if (!navLinks.contains(e.target) && !mobileToggle.contains(e.target)) {
-                navLinks.classList.remove('active');
-                mobileToggle.classList.remove('open');
-            }
-        });
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(15px);
+    border-radius: 40px;
+    z-index: 2000;
+    /* transition must include padding, not just height */
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); 
+}
+
+.split-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 1px solid #eeeeee;
+    z-index: 3000;
+    padding: 0.8rem 0;
+    opacity: 1 !important;        /* Force visibility */
+    transform: none !important;    /* Stop it from sliding/moving via animations */
+    visibility: visible !important;
+    z-index: 9999 !important;      /* Keep it above every other section */
+}
+
+#mobile-toggle {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.nav-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 40px;
+    flex: 1; /* Ensures left/right sides take equal space */
+    margin-right: -100px;
+}
+
+.nav-links.right {
+    justify-content: flex-end;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #111;
+    font-weight: 600;
+    text-transform: none;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    transition: 0.3s opacity;
+}
+
+.nav-links a:hover {
+    color: rgb(239, 151, 87);
+}
+
+
+/* Logo specific styling */
+.brand-logo {
+    height: 65px; /* Set your desired logo height */
+    width: auto;   /* Maintains aspect ratio */
+    display: block;
+    transition: transform 0.3s ease;
+    margin-left: -80px;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo-link:hover .brand-logo {
+    transform: scale(1.05); /* Slight grow on hover */
+}
+
+/* 4. Responsive Adjustment for Mobile */
+@media (max-width: 768px) {
+    .brand-logo {
+        height: 45px; /* Shrink slightly on mobile so it doesn't crowd the screen */
     }
-});
+    .navbar {
+        height: 70px;
+    }
+}
+/* Centered Logo Styling */
+.nav-logo a {
+    font-size: 1.6rem;
+    font-weight: 900;
+    text-decoration: none;
+    color: #000;
+    letter-spacing: -1px;
+}
+
+.nav-logo span { color: #007bff; }
+
+/* Message Button */
+.nav-cta {
+    background: #000;
+    color: #fff !important;
+    padding: 10px 25px;
+    border-radius: 4px; /* Sharp corners for modern look */
+    transition: 0.3s !important;
+}
+
+.nav-cta:hover {
+    background: rgb(239, 151, 87);
+    opacity: 1 !important;
+    color: #000 !important;
+}
+
+/* Mobile Toggle */
+/* Mobile Toggle Styling */
+.nav-toggle {
+    display: none; 
+    width: 30px;
+    height: 24px;
+    position: relative;
+    cursor: pointer;
+    z-index: 9999;
+}
+
+.nav-toggle span {
+    display: block;
+    position: absolute;
+    height: 3px;
+    width: 100%;
+    background: #111;
+    border-radius: 3px;
+    left: 0;
+    transition: all 0.3s ease-in-out;
+    transform-origin: center; /* Ensures rotation happens in the middle */
+}
+
+/* Initial positions */
+.nav-toggle span:nth-child(1) { top: 0; }
+.nav-toggle span:nth-child(2) { top: 10px; }
+.nav-toggle span:nth-child(3) { top: 20px; }
+
+/* The "X" State */
+.nav-toggle.open span:nth-child(1) {
+    top: 10px; /* Move to center */
+    transform: rotate(45deg);
+}
+
+.nav-toggle.open span:nth-child(2) {
+    width: 0;
+    opacity: 0; /* Hide middle line completely */
+    left: 50%;
+}
+
+.nav-toggle.open span:nth-child(3) {
+    top: 10px; /* Move to center */
+    transform: rotate(-45deg);
+}
+
+@media (max-width: 992px) {
+    .nav-toggle { display: block !important; }
+}
+
+/* new nav end */
+
+/* --- HIGH-VISIBILITY SLIDE FROM LEFT --- */
+.slide-left {
+    opacity: 0;
+    transform: translateX(-150px); /* Increased distance */
+    transition: 
+        opacity 1.5s ease, 
+        transform 1.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* Elastic 2025 easing */
+    will-change: transform, opacity;
+}
+
+/* --- HIGH-VISIBILITY SLIDE FROM RIGHT --- */
+.slide-right {
+    opacity: 0;
+    transform: translateX(150px); /* Increased distance */
+    transition: 
+        opacity 1.5s ease, 
+        transform 1.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform, opacity;
+}
+
+/* Reveal State */
+.is-visible .slide-left, 
+.is-visible .slide-right,
+.reveal-active .slide-left,
+.reveal-active .slide-right {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Section Styling */
+section {
+    min-height: auto; /* Allow section to grow/shrink based on content */
+    max-height: 800px;
+    padding: 120px 10%; /* Vertical spacing for a premium 2025 feel */
+    display: flex; 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;
+    text-align: center;
+}
+.bg-alt { background-color: #f9f9f9; }
+
+/* Hero Specific - Background Image */
+.hero {
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                url('images.unsplash.com') center/cover;
+    color: white;
+}
+
+/* --- THE FADE EFFECT --- */
+.fade-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 1s ease-out;
+}
+
+.fade-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Grid for Services */
+
+/* --- STAGGERED CARD REVEAL --- */
+
+/* Initial state: Hidden and shifted down */
+#travel .card {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+#travel .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* Define staggered delays for each of the 3 cards */
+#travel.is-visible .card:nth-child(1) {
+    transition-delay: 0.2s;
+}
+#travel.is-visible .card:nth-child(2) {
+    transition-delay: 0.5s;
+}
+#travel.is-visible .card:nth-child(3) {
+    transition-delay: 0.8s;
+}
+
+/* Final state: Visible and in position */
+#travel.is-visible .card {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+.container {
+    width: 90%;
+    max-width: 1400%; /* Removes the 1200px limit */
+    padding: 0 5%;   /* Keeps a small 5% safety gap on the very edges */
+    margin: 0 auto;
+}
+
+.grid {
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 20px; 
+    width: 100%; 
+    margin-top: 40px;
+}
+.card {
+    width: 100%;
+    padding: 25px 10px ;/* Increased padding for a more spacious full-width look */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #fff4d45f;
+    border-radius: 15px;
+    border: 1px solid;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+    will-change: transform;
+    cursor: pointer;
+    overflow: hidden;
+    
+}
+
+.card-icon {
+    width: 48px;  /* Set your desired size in pixels */
+    height: 48px; /* Set your desired size in pixels */
+    /* This makes sure the icon is centered in the flex container */
+    object-fit: contain
+}
+
+.card:hover {
+    transform: translateY(-20px) scale(1.12); 
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.card:hover .icon-circle-wrapper {
+    transform: scale(1.2); /* Icon zooms 20% */
+    transition: transform 0.4s ease;
+}
+
+.card-description {
+    font-family: 'Poppins', sans-serif; /* Set Poppins as default */
+    text-align: center;
+    color: white;
+}
+
+/* The magic for the circle container */
+.icon-circle-wrapper {
+    width: 80px; /* Determines the size of the circle container */
+    height: 80px;
+    background-color: #fbda56; /* A light blue background color */
+    border-radius: 50%; /* Makes the square div a perfect circle */
+    display: flex;
+    justify-content: center; /* Centers the image horizontally */
+    align-items: center;     /* Centers the image vertically */
+    margin: 0 auto 20px;  
+}
+
+@media (max-width: 900px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.btn { 
+    padding: 12px 30px; 
+    background: rgb(0, 0, 0); 
+    color: rgb(255, 255, 255); 
+    border-radius: 5px; 
+    text-decoration: none; 
+    border: none; 
+    cursor: pointer;
+}
+
+.btn:hover{
+    background:rgb(239, 151, 87) ;
+    color:#000;
+}
+
+/*slider navigation dot/arrow */
+/* Arrow Styling */
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    border: none;
+    color: white;
+    font-size: 2rem;
+    padding: 15px;
+    cursor: pointer;
+    z-index: 10;
+    transition: 0.3s;
+}
+.nav-arrow:hover 
+{
+    background: rgba(36, 36, 36, 0.733);    
+}
+.prev { left: 20px; }
+.next { right: 20px; }
+
+/* Dot Styling */
+.dot-container {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 10;
+}
+.dot {
+    width: 12px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.dot.active {
+    background:  rgb(254, 252, 252);
+    width: 30px; /* Modern pill shape for active dot */
+    border-radius: 10px;
+}
+
+
+
+/*hero */
+.hero-slider {
+    position: relative;
+    height: 100vh; /* Ensures slider takes full screen height */
+    width: 100%;
+    overflow: hidden;
+    background-color: white; /* Fallback color while images load */
+    aspect-ratio: 16 / 9;
+    margin-top: 80px
+}
+
+.slides-container {
+    height: 100%;
+    width: 100%;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.2s ease-in-out;
+    
+    /* THE FIX: These 3 lines ensure the image fits perfectly */
+    background-size: cover;      /* Scales image to fill the div without gaps */
+    background-position: center; /* Centers the image so focal point stays visible */
+    background-repeat: no-repeat;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.slide.active {
+    opacity: 100;
+    z-index: 1;
+}
+
+.slide::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+
+    z-index: 1;
+}
+
+
+.hero-content {
+    position: relative;
+    color: white;
+    z-index: 2; /* Sits above the overlay */
+    text-align: center;
+    padding: 0 20px;
+}
+
+.section-intro {
+    max-width: 1400px; /* Prevents text from being too long and hard to read */
+    margin: 0 auto 20px; /* Centers the text and adds space below it */
+    text-align: left;
+}
+
+.section-intro h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #222;
+}
+
+.section-intro p {
+    font-size: 1.15rem;
+    line-height: 1.8; /* Extra space between lines for a premium feel */
+    color: #555;
+    margin-bottom: 20px;
+}
+
+
+.reveal-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 
+        opacity 1.2s ease-out, 
+        transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.is-visible .reveal-up {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* About Section */
+
+#about {
+    /* KEY REQUIREMENT: This allows us to absolutely position the decorative images relative to this section */
+    position: relative; 
+    overflow: hidden; /* Ensures images don't spill outside the section boundary */
+}
+
+/* --- Left Image (Top/Center) --- */
+#about::before {
+    content: "";
+    position: absolute;
+    top: 0;      /* 10% from the top */
+    left: 0;   /* Slightly off-screen to the left for a modern edge */
+    width: 100%;
+    height: 100%;
+    background: url('images/about_bg_1.png') no-repeat center/contain;
+    z-index: -1; /* Puts image behind your main text/content */
+    opacity: 1; /* Fade the image slightly so it's decorative, not distracting */
+    /* Optional: Add smooth fade-in animation using your existing fade-section JS */
+    transition: opacity 1s ease-out; 
+}
+
+/* --- Right Bottom Image --- */
+#about::after {
+    content: "";
+    position: absolute;
+    width: 850px;
+    height: 650px;
+    background: url('images/about_b.png') no-repeat center/contain;
+    z-index: -1; /* Puts image behind your main text/content */
+    opacity: 0.6; 
+    /* Optional: Add smooth fade-in animation using your existing fade-section JS */
+    transition: opacity 1s ease-out; 
+    margin-right: 2px;
+}
+
+#about.is-visible::before,
+#about.is-visible::after {
+    opacity: 0.6; /* Adjust visibility here */
+}
+
+/* Fix for the main About Content transition */
+.about-flex {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 1s ease-out;
+        display: flex;
+    align-items: center;
+    /* This pushes the elements to opposite ends of the container */
+    justify-content: space-between; 
+    width: 100%;
+    max-width: 1400px; /* Consistent with your dynamic container fix */
+    margin: 0 auto;
+    gap: clamp(20px, 5vw, 80px);
+}
+
+#about.is-visible .about-flex {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#about.reveal-active::after {
+    opacity: 0.8; /* Fades to 80% visibility when the class is added */
+}
+
+/* Mobile Responsiveness: Hide images on small screens 
+@media (max-width: 768px) {
+    #about::before,
+    #about::after {
+        display: none;
+    }
+}
+*/
+
+/* About Section Layout */
+
+.about-text {
+    flex: 0 0 70%;                /* Takes up 50% of the width */
+    text-align: left;
+}
+
+.about-text h2 {
+    font-size: 2.8rem;
+    margin-bottom: 25px;
+    color: #222;
+}
+
+.about-text p {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 20px;
+    max-width: 100%;
+}
+
+.about-image {
+    flex: 0 0 40%;                /* Takes up 50% of the width */
+    opacity: 0;
+    display: flex;
+    justify-content: flex-start;
+    /* Starts smaller, rotated 5 degrees, and shifted right */
+    transform: scale(0.8) translateX(100px);
+    transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy "Spring" effect */
+    filter: blur(10px); /* Starts blurry */
+}
+
+#about.is-visible .about-image {
+    opacity: 1;
+    transform: scale(1) rotate(0deg) translateX(-40px);
+    filter: blur(0);
+}
+
+/* Add a slight hover effect once revealed for extra "pop" */
+.about-image img:hover {
+    transform: scale(1.03);
+    transition: transform 0.4s ease;
+}
+
+.side-img {
+    width: 100%;            /* Makes image responsive */
+    height: auto;
+}
+
+/* Responsive Fix: Stack vertically on mobile */
+@media (max-width: 992px) {
+    .about-flex {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Reduce the distance items travel so they don't go off-screen */
+    .slide-left, .slide-right {
+        transform: translateX(0) !important; /* Disables the horizontal movement on mobile */
+        opacity: 1 !important; /* Just let them fade in or appear instantly */
+    }
+    
+    .about-image {
+        transform: none !important; /* Fixes the about image pushing the side out */
+        max-width: 100%;
+        
+    }
+}
+
+/* Service section */
+
+/* Container that ignores standard margins */
+.full-width-container {
+    width: 100%;
+    padding: 0 2%; /* Small safety gap on edges */
+}
+
+.services-stretch-grid {
+    display: grid;
+    /* Divide the screen into exactly 4 equal parts */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 25px;
+    width: 100%;
+    margin-top: 120px; /* Space for the hover clouds */
+}
+
+
+.service-square {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.6 / 1;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1;
+    /* Smooth transition for the downward movement */
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s;
+}
+
+
+
+/* --- THE COMMENT CLOUD (Centered) --- */
+.cloud-comment {
+    position: absolute;
+    top: -50px; 
+    left: 50%;
+    width: 300px;
+    padding: 20px;
+    text-align: center;
+    z-index: 10;
+    
+    /* 1. GLASSMORPHISM EFFECT */
+    background: rgba(41, 38, 38, 0.981); /* Translucent white */
+    backdrop-filter: blur(12px);          /* Frosted glass blur */
+    -webkit-backdrop-filter: blur(12px);
+    
+    /* 2. MODERN BORDER & SHADOW */
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 
+                inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    
+    /* 3. INITIAL STATE (Hidden & Small) */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-50%) translateY(20px) scale(0.7) rotate(-5deg);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy entry */
+    pointer-events: none;
+}
+.cloud-comment h2{
+    color: white;
+}
+
+.cloud-comment p {
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #1a1a1a;
+    background: linear-gradient(45deg, #d1cfcf, #fffefe); /* Subtle text gradient */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+/* Triangle for the cloud */
+.cloud-comment::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 12px solid rgba(255, 255, 255, 0.7);
+    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.05));
+}
+
+/* --- HOVER EFFECTS --- */
+.service-square:hover {
+    transform: translateY(100px); /* Square moves down */
+    box-shadow: 0 20px 40px rgba(0, 123, 255, 0.15); /* Blue-ish glow */
+}
+
+.service-square:hover .cloud-comment {
+    opacity: 1;
+    visibility: visible;
+    /* 6. FINAL STATE (Floating & Upright) */
+    transform: translateX(-50%) translateY(-125px) scale(1) rotate(0deg);
+}
+
+.service-square img {
+    /* The image will now respect the 15px padding as its boundary */
+    width: 100%; 
+    height: 100%;
+    object-fit: cover; /* Ensures the image doesn't get trimmed */
+    object-position: center;
+    border-radius: 24px;
+}
+
+.service-square:hover img {
+    transform: scale(1.1); /* Subtle icon grow */
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+    .services-stretch-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2x2 grid on tablets */
+    }
+}
+
+@media (max-width: 600px) {
+    .services-stretch-grid {
+        grid-template-columns: 1fr; /* 1 column on phones */
+    }
+}
+
+/* Contact section */
+
+#contact {
+    position: relative;
+    /* Adding two background images separated by a comma */
+    background-image: 
+        url('images/contactus_bg.png');
+
+    /* Position: first image center-left, second image center-right */
+    background-position: 
+            center;
+    background-size: cover;
+   
+    /* Ensure they don't repeat and stay at a fixed size */
+    background-repeat: no-repeat;
+    background-size: 100% 100%; /* Adjust '200px' to change how big they are */
+    
+    /* Optional: Fade them slightly so they don't distract from text */
+    background-blend-mode: multiply; 
+}
+
+@media (max-width: 900px) {
+    #contact {
+        background-image: none;
+    }
+}
+
+/* Contact Flex Layout */
+.contact-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 80px;
+    text-align: left; /* Anchors content to the sides */
+}
+
+.contact-details, .contact-form-container {
+    flex: 1; /* Both sides take equal width */
+}
+
+/* Left Side Styling */
+.contact-details h2 {
+    font-size: 2.8rem;
+    margin-bottom: 20px;
+}
+
+.contact-info-list {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.info-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.info-item h4 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.info-item p {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+/* Right Side: Form Styling */
+.contact-form-container {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+}
+
+.contact-form h3 {
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.contact-form input, 
+.contact-form textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    background: #fdfdfd;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.contact-form input:focus, 
+.contact-form textarea:focus {
+    outline: none;
+    border-color: #000000;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+}
+
+/* Button stretch */
+.contact-form .btn {
+    width: 100%;
+    padding: 18px;
+    font-size: 1.1rem;
+}
+
+/* Responsive Fix for 2025 */
+@media (max-width: 900px) {
+    .contact-flex {
+        flex-direction: column;
+        gap: 50px;
+    }
+    .contact-details {
+        text-align: center;
+    }
+    .info-item {
+        justify-content: center;
+    }
+}
+
+/*adding fix for mob*/
+/* --- CRITICAL MOBILE FIXES --- */
+@media (max-width: 768px) {
+    /* 1. Fix Section Heights (Crucial) */
+    section {
+        max-height: none !important; /* Allows sections to grow with content */
+        padding: 80px 5% !important;   /* Reduce padding so it fits */
+        height: auto !important;
+    }
+
+    /* 2. Fix Navigation & Negative Margins */
+    .nav-container {
+        padding: 0 20px;
+    }
+
+    .brand-logo {
+        margin-left: 0 !important; /* Removes the offset that pushes logo off-screen */
+        height: 40px;
+    }
+
+    /* 3. Mobile Menu Overlay Logic */
+    .nav-links {
+        display: none; /* Hidden by default */
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: white;
+        padding: 30px;
+        gap: 20px;
+        margin-right: 0 !important;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    /* This class will be toggled by JavaScript */
+    .nav-links.active {
+        display: flex !important;
+    }
+
+    /* 4. Hero Slider Fix */
+    .hero-slider {
+        height: 50vh; /* Shorter height for mobile screens */
+        margin-top: 60px;
+    }
+
+    /* 5. Contact Form & About Text */
+    .contact-form-container {
+        padding: 20px;
+        width: 100%;
+    }
+
+    .about-text h2, .contact-details h2 {
+        font-size: 1.8rem; /* Smaller headings for mobile */
+    }
+    
+    .about-image {
+        transform: none !important; /* Stop the bouncy shift-right on mobile */
+        display: none; /* Images are often too crowded on small phones */
+    }
+}
+
+/* Add this to the end of your CSS to ensure the nav is always visible from the start */
+.split-nav, 
+.nav-container, 
+#mobile-toggle, 
+.nav-toggle span {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    transition: opacity 0s, transform 0s !important; /* Disables fade-in for the nav only */
+}
+
+@media (max-width: 992px) {
+    .your-section-class { /* Replace with your actual section class */
+        background-attachment: scroll !important;
+        background-position: center center !important;
+        background-size: cover !important;
+    }
+}
+
+@media (max-width: 992px) {
+    /* Target the container */
+    .about-image {
+        display: block !important;    /* Block layout is often more reliable for centering images */
+        text-align: center !important; /* Centers the inline <img> */
+        width: 100% !important;
+        margin: 20px 0 !important;
+        padding: 0 !important;        /* Remove any side padding */
+        
+        /* Kill all animations that push it to the right */
+        transform: translate(0, 0) !important; 
+        opacity: 1 !important;
+        filter: none !important;
+        transition: none !important;
+        
+        /* Ensure it takes full width so it can't sit on the right */
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Target the actual image */
+    .side-img {
+        display: inline-block !important; /* Works with text-align: center */
+        width: 90% !important;           /* Scale for mobile */
+        max-width: 450px !important;     /* Don't let it get too huge */
+        height: auto !important;
+        margin: 0 auto !important;       /* Auto margins for safety */
+        
+        /* Reset any desktop-only offsets */
+        position: static !important;
+        left: auto !important;
+        right: auto !important;
+        transform: none !important;
+    }
+}
