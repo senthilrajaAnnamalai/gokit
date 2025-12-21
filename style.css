@@ -214,17 +214,18 @@ input, button, textarea, select {
 .nav-cta:hover {
     background: rgb(239, 151, 87);
     opacity: 1 !important;
+    color: #000 !important;
 }
 
 /* Mobile Toggle */
 /* Mobile Toggle Styling */
 .nav-toggle {
-    display: none; /* Hidden on desktop */
+    display: none; 
     width: 30px;
-    height: 20px;
+    height: 24px;
     position: relative;
     cursor: pointer;
-    z-index: 4000;
+    z-index: 9999;
 }
 
 .nav-toggle span {
@@ -232,41 +233,39 @@ input, button, textarea, select {
     position: absolute;
     height: 3px;
     width: 100%;
-    background: #111; /* Color of the menu lines */
+    background: #111;
     border-radius: 3px;
-    opacity: 1;
     left: 0;
-    transform: rotate(0deg);
-    transition: .25s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    transform-origin: center; /* Ensures rotation happens in the middle */
 }
 
-/* Position the three lines */
-.nav-toggle span:nth-child(1) { top: 0px; }
+/* Initial positions */
+.nav-toggle span:nth-child(1) { top: 0; }
 .nav-toggle span:nth-child(2) { top: 10px; }
 .nav-toggle span:nth-child(3) { top: 20px; }
 
-/* ANIMATION: Transform to 'X' when menu is open */
+/* The "X" State */
 .nav-toggle.open span:nth-child(1) {
-    top: 10px;
-    transform: rotate(135deg);
+    top: 10px; /* Move to center */
+    transform: rotate(45deg);
 }
 
 .nav-toggle.open span:nth-child(2) {
-    opacity: 0;
-    left: -60px;
+    width: 0;
+    opacity: 0; /* Hide middle line completely */
+    left: 50%;
 }
 
 .nav-toggle.open span:nth-child(3) {
-    top: 10px;
-    transform: rotate(-135deg);
+    top: 10px; /* Move to center */
+    transform: rotate(-45deg);
 }
 
-/* Ensure toggle shows up on mobile */
 @media (max-width: 992px) {
-    .nav-toggle {
-        display: block;
-    }
+    .nav-toggle { display: block !important; }
 }
+
 /* new nav end */
 
 /* --- HIGH-VISIBILITY SLIDE FROM LEFT --- */
@@ -444,6 +443,11 @@ section {
     cursor: pointer;
 }
 
+.btn:hover{
+    background:rgb(239, 151, 87) ;
+    color:#000;
+}
+
 /*slider navigation dot/arrow */
 /* Arrow Styling */
 .nav-arrow {
@@ -596,10 +600,10 @@ section {
 #about::before {
     content: "";
     position: absolute;
-    top: 3%;      /* 10% from the top */
-    left: -100px;   /* Slightly off-screen to the left for a modern edge */
-    width: 90%;
-    height: 600px;
+    top: 0;      /* 10% from the top */
+    left: 0;   /* Slightly off-screen to the left for a modern edge */
+    width: 100%;
+    height: 100%;
     background: url('images/about_bg_1.png') no-repeat center/contain;
     z-index: -1; /* Puts image behind your main text/content */
     opacity: 1; /* Fade the image slightly so it's decorative, not distracting */
@@ -650,13 +654,14 @@ section {
     opacity: 0.8; /* Fades to 80% visibility when the class is added */
 }
 
-/* Mobile Responsiveness: Hide images on small screens */
+/* Mobile Responsiveness: Hide images on small screens 
 @media (max-width: 768px) {
     #about::before,
     #about::after {
         display: none;
     }
 }
+*/
 
 /* About Section Layout */
 
@@ -692,7 +697,7 @@ section {
 
 #about.is-visible .about-image {
     opacity: 1;
-    transform: scale(1) rotate(0deg) translateX(-50px);
+    transform: scale(1) rotate(0deg) translateX(-40px);
     filter: blur(0);
 }
 
@@ -713,10 +718,6 @@ section {
         flex-direction: column;
         text-align: center;
     }
-    .about-text, .about-image {
-        flex: 0 0 100%;
-        padding-right: 0;
-    }
 }
 
 @media (max-width: 768px) {
@@ -729,6 +730,7 @@ section {
     .about-image {
         transform: none !important; /* Fixes the about image pushing the side out */
         max-width: 100%;
+        
     }
 }
 
@@ -1067,4 +1069,48 @@ section {
     visibility: visible !important;
     transform: none !important;
     transition: opacity 0s, transform 0s !important; /* Disables fade-in for the nav only */
+}
+
+@media (max-width: 992px) {
+    .your-section-class { /* Replace with your actual section class */
+        background-attachment: scroll !important;
+        background-position: center center !important;
+        background-size: cover !important;
+    }
+}
+
+@media (max-width: 992px) {
+    /* Target the container */
+    .about-image {
+        display: block !important;    /* Block layout is often more reliable for centering images */
+        text-align: center !important; /* Centers the inline <img> */
+        width: 100% !important;
+        margin: 20px 0 !important;
+        padding: 0 !important;        /* Remove any side padding */
+        
+        /* Kill all animations that push it to the right */
+        transform: translate(0, 0) !important; 
+        opacity: 1 !important;
+        filter: none !important;
+        transition: none !important;
+        
+        /* Ensure it takes full width so it can't sit on the right */
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Target the actual image */
+    .side-img {
+        display: inline-block !important; /* Works with text-align: center */
+        width: 90% !important;           /* Scale for mobile */
+        max-width: 450px !important;     /* Don't let it get too huge */
+        height: auto !important;
+        margin: 0 auto !important;       /* Auto margins for safety */
+        
+        /* Reset any desktop-only offsets */
+        position: static !important;
+        left: auto !important;
+        right: auto !important;
+        transform: none !important;
+    }
 }
